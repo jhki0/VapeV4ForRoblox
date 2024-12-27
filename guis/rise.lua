@@ -3168,112 +3168,108 @@ targetinfo = {
 mainapi.Libraries.targetinfo = targetinfo
 
 function mainapi:UpdateTextGUI(afterload)
-	if not afterload and not mainapi.Loaded then return end
-	if interface.Button.Enabled then
-		local found = {}
-		for _, v in InterfaceLabels do
-			if v.Enabled then
-				table.insert(found, v.Object.Name)
-			end
-			v.Object:Destroy()
-		end
-		table.clear(InterfaceLabels)
+    if not afterload and not mainapi.Loaded then return end
+    if not interface.Button.Enabled then return end
 
-		local info = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
-		for i, v in mainapi.Modules do
-			if v.Enabled or table.find(found, i) then
-				if interfaceshow.Value == 'Exclude render' and v.Category == 'Render' then continue end
-				if interfaceshow.Value == 'Only bound' and v.Bind == '' then continue end
-				if i == 'RiseInterface' then continue end
-				local holder = Instance.new('Frame')
-				holder.Name = i
-				holder.Size = UDim2.fromOffset(0, 22)
-				holder.BackgroundTransparency = 0.5
-				holder.BackgroundColor3 = Color3.new()
-				holder.BorderSizePixel = 0
-				holder.Parent = arrayholder
-				local holderbackground = Instance.new('Frame')
-				local moduletext = i..(v.ExtraText and interfacesuffix.Enabled and ' '..v.ExtraText() or '')
-				if interfacelowercase.Enabled then
-					moduletext = moduletext:lower()
-				end
-				holderbackground.Size = UDim2.fromOffset(getfontsize(moduletext, 21, uipallet.Font).X + (v.ExtraText and 10 or 8), 22)
-				holderbackground.Position = UDim2.fromOffset(-holderbackground.Size.X.Offset, 0)
-				holderbackground.BackgroundColor3 = Color3.new()
-				holderbackground.BackgroundTransparency = interfacebkg.Value == 'Normal' and 0.5 or 1
-				holderbackground.BorderSizePixel = 0
-				holderbackground.Parent = holder
-				local holdertext = Instance.new('TextLabel')
-				holdertext.Size = UDim2.fromScale(1, 1)
-				holdertext.Position = UDim2.fromOffset(v.ExtraText and -6 or -4, 0)
-				holdertext.BackgroundColor3 = Color3.new()
-				holdertext.BackgroundTransparency = 1
-				holdertext.Text = i..(v.ExtraText and interfacesuffix.Enabled and " <font color='rgb(200, 200, 200)'>"..v.ExtraText()..'</font>' or '')
-				if interfacelowercase.Enabled then
-					holdertext.Text = holdertext.Text:lower()
-				end
-				holdertext.TextColor3 = uipallet.MainColor
-				holdertext.TextSize = 21
-				holdertext.TextXAlignment = Enum.TextXAlignment.Right
-				holdertext.TextYAlignment = Enum.TextYAlignment.Top
-				holdertext.RichText = true
-				holdertext.FontFace = uipallet.Font
-				holdertext.Parent = holderbackground
-				local holderline
-				if interfacebar.Enabled then
-					holderline = Instance.new('ImageLabel')
-					holderline.Size = UDim2.fromOffset(2, 18)
-					holderline.Position = UDim2.new(1, 0, 0, 2)
-					holderline.BackgroundTransparency = 1
-					holderline.Image = getcustomasset('newvape/assets/rise/slice.png')
-					holderline.ImageColor3 = uipallet.MainColor
-					holderline.ZIndex = -1
-					holderline.Parent = holderbackground
-					addCorner(holderline, UDim.new(1, 0))
-				end
+    local info = TweenInfo.new(0.5, Enum.EasingStyle.Exponential, Enum.EasingDirection.Out)
+    local activeLabels = {}
+    
+    for i, v in mainapi.Modules do
+        if v.Enabled then
+            if interfaceshow.Value == 'Exclude render' and v.Category == 'Render' then continue end
+            if interfaceshow.Value == 'Only bound' and v.Bind == '' then continue end
+            if i == 'RiseInterface' then continue end
+            activeLabels[i] = true
 
-				if not table.find(found, i) then
-					holder.Size = UDim2.fromOffset(0, 0)
-					holderbackground.Position = UDim2.fromOffset(15, 0)
-					tween:Tween(holder, info, {
-						Size = UDim2.fromOffset(0, 22)
-					})
-					tween:Tween(holderbackground, info, {
-						Position = UDim2.fromOffset(-holderbackground.Size.X.Offset, 0)
-					})
-				else
-					holder.Size = UDim2.fromOffset(0, 22)
-					holderbackground.Position = UDim2.fromOffset(-holderbackground.Size.X.Offset, 0)
-					if not v.Enabled then
-						tween:Tween(holder, info, {
-							Size = UDim2.fromOffset(0, 0)
-						})
-						tween:Tween(holderbackground, info, {
-							Position = UDim2.fromOffset(15, 0)
-						})
-					end
-				end
+            local moduletext = i..(v.ExtraText and interfacesuffix.Enabled and ' '..v.ExtraText() or '')
+            if interfacelowercase.Enabled then moduletext = moduletext:lower() end
+            
+            local label = InterfaceLabels[i]
+            if not label then
+                label = {
+                    Object = Instance.new('Frame'),
+                    Text = Instance.new('TextLabel'),
+                    Background = Instance.new('Frame')
+                }
+                label.Object.Name = i
+                label.Object.BorderSizePixel = 0
+                label.Object.Parent = arrayholder
+                
+                label.Background.BorderSizePixel = 0
+                label.Background.Parent = label.Object
+                
+                label.Text.BackgroundTransparency = 1
+                label.Text.RichText = true
+                label.Text.FontFace = uipallet.Font
+                label.Text.Parent = label.Background
+                
+                InterfaceLabels[i] = label
+            end
 
-				table.insert(InterfaceLabels, {
-					Object = holder,
-					Text = holdertext,
-					Background = holderbackground,
-					Color = holderline,
-					Enabled = v.Enabled
-				})
-			end
-		end
+            if interfacebar.Enabled and not label.Color then
+                label.Color = Instance.new('ImageLabel')
+                label.Color.Size = UDim2.fromOffset(2, 18)
+                label.Color.Position = UDim2.new(1, 0, 0, 2)
+                label.Color.BackgroundTransparency = 1
+                label.Color.Image = getcustomasset('newvape/assets/rise/slice.png')
+                label.Color.ImageColor3 = uipallet.MainColor
+                label.Color.ZIndex = -1
+                label.Color.Parent = label.Background
+                addCorner(label.Color, UDim.new(1, 0))
+            elseif not interfacebar.Enabled and label.Color then
+                label.Color:Destroy()
+                label.Color = nil
+            end
 
-		table.sort(InterfaceLabels, function(a, b)
-			return a.Background.Size.X.Offset > b.Background.Size.X.Offset
-		end)
+            label.Object.Size = UDim2.fromOffset(0, 22)
+            label.Object.BackgroundTransparency = 0.5
+            label.Object.BackgroundColor3 = Color3.new()
+            
+            label.Background.Size = UDim2.fromOffset(getfontsize(moduletext, 21, uipallet.Font).X + (v.ExtraText and 10 or 8), 22)
+            label.Background.BackgroundColor3 = Color3.new()
+            label.Background.BackgroundTransparency = interfacebkg.Value == 'Normal' and 0.5 or 1
+            
+            label.Text.Size = UDim2.fromScale(1, 1)
+            label.Text.Position = UDim2.fromOffset(v.ExtraText and -6 or -4, 0)
+            label.Text.Text = interfacelowercase.Enabled and (v.ExtraText and interfacesuffix.Enabled and i.." <font color='rgb(200, 200, 200)'>"..v.ExtraText()..'</font>' or moduletext):lower() or (v.ExtraText and interfacesuffix.Enabled and i.." <font color='rgb(200, 200, 200)'>"..v.ExtraText()..'</font>' or moduletext)
+            label.Text.TextColor3 = uipallet.MainColor
+            label.Text.TextSize = 21
+            label.Text.TextXAlignment = Enum.TextXAlignment.Right
+            label.Text.TextYAlignment = Enum.TextYAlignment.Top
 
-		for i, v in InterfaceLabels do
-			v.Object.LayoutOrder = i
-		end
-	end
+            label.Object.LayoutOrder = -(label.Text.AbsoluteSize.X)
+            
+            if not label.Enabled then
+                label.Object.Size = UDim2.fromOffset(0, 0)
+                label.Background.Position = UDim2.fromOffset(15, 0)
+                tween:Tween(label.Object, info, {Size = UDim2.fromOffset(0, 22)})
+                tween:Tween(label.Background, info, {Position = UDim2.fromOffset(-label.Background.Size.X.Offset, 0)})
+            else
+                label.Background.Position = UDim2.fromOffset(-label.Background.Size.X.Offset, 0)
+            end
 
-	mainapi:UpdateGUI(mainapi.GUIColor.Hue, mainapi.GUIColor.Sat, mainapi.GUIColor.Value, true)
+            label.Enabled = true
+            label.Object.Visible = true
+            label.Removing = nil
+        end
+    end
+
+    for i, label in InterfaceLabels do
+        if not activeLabels[i] and label.Enabled and not label.Removing then
+            label.Enabled = false
+            label.Removing = true
+            tween:Tween(label.Object, info, {Size = UDim2.fromOffset(0, 0)})
+            tween:Tween(label.Background, info, {Position = UDim2.fromOffset(15, 0)})
+            task.delay(0.5, function()
+                if not label.Enabled then
+                    label.Object:Destroy()
+                    InterfaceLabels[i] = nil
+                end
+            end)
+        end
+    end
+
+    mainapi:UpdateGUI(mainapi.GUIColor.Hue, mainapi.GUIColor.Sat, mainapi.GUIColor.Value, true)
 end
 
 function mainapi:UpdateGUI(hue, sat, val, default)
