@@ -3221,7 +3221,6 @@ function mainapi:UpdateTextGUI(afterload)
                 label.Color = nil
             end
 
-            label.Object.Size = UDim2.fromOffset(0, 22)
             label.Object.BackgroundTransparency = 0.5
             label.Object.BackgroundColor3 = Color3.new()
             
@@ -3246,26 +3245,33 @@ function mainapi:UpdateTextGUI(afterload)
                 tween:Tween(label.Background, info, {Position = UDim2.fromOffset(-label.Background.Size.X.Offset, 0)})
             else
                 label.Background.Position = UDim2.fromOffset(-label.Background.Size.X.Offset, 0)
+                label.Object.Size = UDim2.fromOffset(0, 22)
+            end
+
+            if label.Remove then
+                task.cancel(label.Remove)
+                label.Remove = nil
             end
 
             label.Enabled = true
             label.Object.Visible = true
-            label.Removing = nil
         end
     end
 
     for i, label in InterfaceLabels do
-        if not activeLabels[i] and label.Enabled and not label.Removing then
+        if not activeLabels[i] and label.Enabled then
             label.Enabled = false
-            label.Removing = true
-            tween:Tween(label.Object, info, {Size = UDim2.fromOffset(0, 0)})
-            tween:Tween(label.Background, info, {Position = UDim2.fromOffset(15, 0)})
-            task.delay(0.5, function()
-                if not label.Enabled then
-                    label.Object:Destroy()
-                    InterfaceLabels[i] = nil
-                end
-            end)
+            if not label.Remove then
+                tween:Tween(label.Object, info, {Size = UDim2.fromOffset(0, 0)})
+                tween:Tween(label.Background, info, {Position = UDim2.fromOffset(15, 0)})
+                label.Remove = task.delay(0.5, function()
+                    if not label.Enabled then
+                        label.Object:Destroy()
+                        InterfaceLabels[i] = nil
+                    end
+                    label.Remove = nil
+                end)
+            end
         end
     end
 
