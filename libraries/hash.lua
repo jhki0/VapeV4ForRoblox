@@ -148,7 +148,7 @@ local TWO_POW_40 = 2 ^ 40
 local TWO56_POW_7 = 256 ^ 7
 
 -- Implementation for Lua 5.1/5.2 (with or without bitwise library available)
-local function sha256_feed_64(H, str, offs, size)
+local function sha256_feed_64(H, str  : string, offs : number, size : number)
 	-- offs >= 0, size >= 0, size is multiple of 64
 	local W, K = common_W, sha2_K_hi
 	local h1, h2, h3, h4, h5, h6, h7, h8 = H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8]
@@ -184,7 +184,7 @@ local function sha256_feed_64(H, str, offs, size)
 	H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8] = h1, h2, h3, h4, h5, h6, h7, h8
 end
 
-local function sha512_feed_128(H_lo, H_hi, str, offs, size)
+local function sha512_feed_128(H_lo, H_hi, str : string, offs : number, size : number)
 	-- offs >= 0, size >= 0, size is multiple of 128
 	-- W1_hi, W1_lo, W2_hi, W2_lo, ...   Wk_hi = W[2*k-1], Wk_lo = W[2*k]
 	local W, K_lo, K_hi = common_W, sha2_K_lo, sha2_K_hi
@@ -275,7 +275,7 @@ local function sha512_feed_128(H_lo, H_hi, str, offs, size)
 	H_hi[1], H_hi[2], H_hi[3], H_hi[4], H_hi[5], H_hi[6], H_hi[7], H_hi[8] = h1_hi, h2_hi, h3_hi, h4_hi, h5_hi, h6_hi, h7_hi, h8_hi
 end
 
-local function md5_feed_64(H, str, offs, size)
+local function md5_feed_64(H, str : string, offs : number, size : number)
 	-- offs >= 0, size >= 0, size is multiple of 64
 	local W, K, md5_next_shift = common_W, md5_K, md5_next_shift
 	local h1, h2, h3, h4 = H[1], H[2], H[3], H[4]
@@ -336,7 +336,7 @@ local function md5_feed_64(H, str, offs, size)
 	H[1], H[2], H[3], H[4] = h1, h2, h3, h4
 end
 
-local function sha1_feed_64(H, str, offs, size)
+local function sha1_feed_64(H, str : string, offs : number, size : number)
 	-- offs >= 0, size >= 0, size is multiple of 64
 	local W = common_W
 	local h1, h2, h3, h4, h5 = H[1], H[2], H[3], H[4], H[5]
@@ -398,7 +398,7 @@ local function sha1_feed_64(H, str, offs, size)
 	H[1], H[2], H[3], H[4], H[5] = h1, h2, h3, h4, h5
 end
 
-local function keccak_feed(lanes_lo, lanes_hi, str, offs, size, block_size_in_bytes)
+local function keccak_feed(lanes_lo, lanes_hi, str : string, offs : number, size : number, block_size_in_bytes : number)
 	-- This is an example of a Lua function having 79 local variables :-)
 	-- offs >= 0, size >= 0, size is multiple of block_size_in_bytes, block_size_in_bytes is positive multiple of 8
 	local RC_lo, RC_hi = sha3_RC_lo, sha3_RC_hi
@@ -625,7 +625,7 @@ end
 --	Yes, 53-bit "double" arithmetic is enough.
 --	We could obtain first 40 bits by direct calculation of p^(1/3) and next 40 bits by one step of Newton's method.
 do
-	local function mul(src1, src2, factor, result_length)
+	local function mul(src1 : number, src2 : number, factor : number, result_length : number)
 		-- src1, src2 - long integers (arrays of digits in base TWO_POW_24)
 		-- factor - small integer
 		-- returns long integer result (src1 * src2 * factor) and its floating point approximation
@@ -736,14 +736,14 @@ end
 --------------------------------------------------------------------------------
 -- MAIN FUNCTIONS
 --------------------------------------------------------------------------------
-local function sha256ext(width, message)
+local function sha256ext(width : number, message : string)
 	-- Create an instance (private objects for current calculation)
 	local Array256 = sha2_H_ext256[width] -- # == 8
 	local length, tail = 0, ""
 	local H = table.create(8)
 	H[1], H[2], H[3], H[4], H[5], H[6], H[7], H[8] = Array256[1], Array256[2], Array256[3], Array256[4], Array256[5], Array256[6], Array256[7], Array256[8]
 
-	local function partial(message_part)
+	local function partial(message_part : string)
 		if message_part then
 			local partLength = #message_part
 			if tail then
@@ -805,7 +805,7 @@ local function sha256ext(width, message)
 	end
 end
 
-local function sha512ext(width, message)
+local function sha512ext(width : number, message : string)
 
 	-- Create an instance (private objects for current calculation)
 	local length, tail, H_lo, H_hi = 0, "", table.pack(table.unpack(sha2_H_ext512_lo[width])), not HEX64 and table.pack(table.unpack(sha2_H_ext512_hi[width]))
@@ -879,13 +879,13 @@ local function sha512ext(width, message)
 	end
 end
 
-local function md5(message)
+local function md5(message : string)
 
 	-- Create an instance (private objects for current calculation)
 	local H, length, tail = table.create(4), 0, ""
 	H[1], H[2], H[3], H[4] = md5_sha1_H[1], md5_sha1_H[2], md5_sha1_H[3], md5_sha1_H[4]
 
-	local function partial(message_part)
+	local function partial(message_part : string)
 		if message_part then
 			local partLength = #message_part
 			if tail then
@@ -942,7 +942,7 @@ local function md5(message)
 	end
 end
 
-local function sha1(message)
+local function sha1(message : string)
 	-- Create an instance (private objects for current calculation)
 	local H, length, tail = table.pack(table.unpack(md5_sha1_H)), 0, ""
 
@@ -1005,16 +1005,8 @@ local function sha1(message)
 	end
 end
 
-local function keccak(block_size_in_bytes, digest_size_in_bytes, is_SHAKE, message)
+local function keccak(block_size_in_bytes : number, digest_size_in_bytes : number, is_SHAKE : boolean, message : string)
 	-- "block_size_in_bytes" is multiple of 8
-	if type(digest_size_in_bytes) ~= "number" then
-		-- arguments in SHAKE are swapped:
-		--	NIST FIPS 202 defines SHAKE(message,num_bits)
-		--	this module   defines SHAKE(num_bytes,message)
-		-- it's easy to forget about this swap, hence the check
-		error("Argument 'digest_size_in_bytes' must be a number", 2)
-	end
-
 	-- Create an instance (private objects for current calculation)
 	local tail, lanes_lo, lanes_hi = "", table.create(25, 0), hi_factor_keccak == 0 and table.create(25, 0)
 	local result
@@ -1031,7 +1023,7 @@ local function keccak(block_size_in_bytes, digest_size_in_bytes, is_SHAKE, messa
 	--~		 append the first r bits of S to Z
 	--~		 if Z is still less than d bits long, apply f to S, yielding a new state S.
 	--~	 truncate Z to d bits
-	local function partial(message_part)
+	local function partial(message_part : string)
 		if message_part then
 			local partLength = #message_part
 			if tail then
@@ -1089,7 +1081,7 @@ local function keccak(block_size_in_bytes, digest_size_in_bytes, is_SHAKE, messa
 				local parts = {} -- digest parts
 				local last_part, last_part_size = "", 0
 
-				local function get_next_part_of_digest(bytes_needed)
+				local function get_next_part_of_digest(bytes_needed : number)
 					-- returns 'bytes_needed' bytes, for arbitrary integer 'bytes_needed'
 					bytes_needed = bytes_needed or 1
 					if bytes_needed <= last_part_size then
@@ -1148,11 +1140,11 @@ local function keccak(block_size_in_bytes, digest_size_in_bytes, is_SHAKE, messa
 	end
 end
 
-local function HexToBinFunction(hh)
+local function HexToBinFunction(hh : string)
 	return string.char(tonumber(hh, 16))
 end
 
-local function hex2bin(hex_string)
+local function hex2bin(hex_string : string)
 	return (string.gsub(hex_string, "%x%x", HexToBinFunction))
 end
 
@@ -1172,7 +1164,7 @@ for j, pair in ipairs{"AZ", "az", "09"} do
 	end
 end
 
-local function bin2base64(binary_string)
+local function bin2base64(binary_string : string)
 	local stringLength = #binary_string
 	local result = table.create(math.ceil(stringLength / 3))
 	local length = 0
@@ -1190,7 +1182,7 @@ local function bin2base64(binary_string)
 	return table.concat(result)
 end
 
-local function base642bin(base64_string)
+local function base642bin(base64_string : string)
 	local result, chars_qty = {}, 3
 	for pos, ch in string.gmatch(string.gsub(base64_string, "%s+", ""), "()(.)") do
 		local code = base64_symbols[ch]
