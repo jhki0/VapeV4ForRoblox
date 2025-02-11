@@ -145,11 +145,11 @@ end
 
 local function parsePositions(v, func)
 	if v:IsA('Part') and v.Size // 1 == v.Size then
-		local start = (v.Position - (v.Size / 2)) + Vector3.new(1.5, 1.5, 1.5)
+		local start = (v.Position - (v.Size / 2)) + vector.create(1.5, 1.5, 1.5)
 		for x = 0, v.Size.X - 1, 3 do
 			for y = 0, v.Size.Y - 1, 3 do
 				for z = 0, v.Size.Z - 1, 3 do
-					func(start + Vector3.new(x, y, z))
+					func(start + vector.create(x, y, z))
 				end
 			end
 		end
@@ -219,7 +219,7 @@ run(function()
 				}
 
 				if plr == lplr then
-					entity.GroundPosition = Vector3.zero
+					entity.GroundPosition = vector.zero
 					entitylib.character = entity
 					entitylib.isAlive = true
 					entitylib.Events.LocalAdded:Fire(entity)
@@ -523,7 +523,7 @@ run(function()
 		if check then
 			local hort, vert = (Horizontal.Value / 100), (Vertical.Value / 100)
 			if hort == 0 and vert == 0 then return end
-			velo = Vector3.new(velo.X * hort, velo.Y * vert, velo.Z * hort)
+			velo = vector.create(velo.X * hort, velo.Y * vert, velo.Z * hort)
 		end
 	
 		return old(velo, ...)
@@ -581,7 +581,7 @@ run(function()
 	local function getLowGround()
 		local mag = math.huge
 		for pos in store.blocks do
-			if pos.Y < mag and not store.blocks[pos + Vector3.new(0, 3, 0)] then
+			if pos.Y < mag and not store.blocks[pos + vector.create(0, 3, 0)] then
 				mag = pos.Y
 			end
 		end
@@ -596,11 +596,11 @@ run(function()
 				if pos ~= math.huge then
 					local middle = next(store.blocks)
 					part = Instance.new('Part')
-					part.Size = Vector3.new(10000, 1, 10000)
+					part.Size = vector.create(10000, 1, 10000)
 					part.Transparency = 1 - Color.Opacity
 					part.Material = Enum.Material[Material.Value]
 					part.Color = Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
-					part.Position = Vector3.new(middle.X, pos - 2, middle.Z)
+					part.Position = vector.create(middle.X, pos - 2, middle.Z)
 					part.CanCollide = Mode.Value == 'Collide'
 					part.Anchored = true
 					part.CanQuery = false
@@ -611,7 +611,7 @@ run(function()
 							local root = entitylib.character.RootPart
 							debounce = tick() + 0.1
 							if Mode.Value == 'Velocity' then
-								root.Velocity = Vector3.new(root.Velocity.X, 100, root.Velocity.Z)
+								root.Velocity = vector.create(root.Velocity.X, 100, root.Velocity.Z)
 							end
 						end
 					end))
@@ -768,12 +768,12 @@ run(function()
 						local switched = false
 	
 						if #plrs > 0 then
-							local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
+							local localfacing = entitylib.character.RootPart.CFrame.LookVector * vector.create(1, 0, 1)
 							store.noShoot = tick() + 1
 	
 							for i, v in plrs do
 								local delta = (v.RootPart.Position - entitylib.character.RootPart.Position)
-								local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
+								local angle = math.acos(localfacing:Dot((delta * vector.create(1, 0, 1)).Unit))
 								if angle > (math.rad(AngleCheck.Value) / 2) then continue end
 								table.insert(attacked, v)
 								targetinfo.Targets[v] = tick() + 1
@@ -810,7 +810,7 @@ run(function()
 					end
 	
 					for i, v in Particles do
-						v.Position = attacked[i] and attacked[i].RootPart.Position or Vector3.new(9e9, 9e9, 9e9)
+						v.Position = attacked[i] and attacked[i].RootPart.Position or vector.create(9e9, 9e9, 9e9)
 						v.Parent = attacked[i] and gameCamera or nil
 					end
 	
@@ -866,7 +866,7 @@ run(function()
 					local box = Instance.new('BoxHandleAdornment')
 					box.Adornee = nil
 					box.AlwaysOnTop = true
-					box.Size = Vector3.new(3, 5, 3)
+					box.Size = vector.create(3, 5, 3)
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.ZIndex = 0
 					box.Parent = vape.gui
@@ -896,7 +896,7 @@ run(function()
 			if callback then
 				for i = 1, 10 do
 					local part = Instance.new('Part')
-					part.Size = Vector3.new(2, 4, 2)
+					part.Size = vector.create(2, 4, 2)
 					part.Anchored = true
 					part.CanCollide = false
 					part.Transparency = 1
@@ -1035,7 +1035,7 @@ run(function()
 						local hum = entitylib.character.Humanoid
 						if (entitylib.character.GroundPosition.Y - entitylib.character.RootPart.Position.Y) > 10 then
 							rayCheck.FilterDescendantsInstances = {lplr.Character, gameCamera}
-							local ray = workspace:Raycast(entitylib.character.RootPart.Position, Vector3.new(0, -(entitylib.character.HipHeight + 10), 0), rayCheck)
+							local ray = workspace:Raycast(entitylib.character.RootPart.Position, vector.create(0, -(entitylib.character.HipHeight + 10), 0), rayCheck)
 							if not ray then
 								hum:ChangeState(Enum.HumanoidStateType.Ragdoll)
 								task.wait(0.1)
@@ -1235,17 +1235,17 @@ run(function()
 	local Downwards
 	local Diagonal
 	local LimitItem
-	local adjacent, lastpos = {}, Vector3.zero
+	local adjacent, lastpos = {}, vector.zero
 	
 	for x = -3, 3, 3 do
 		for y = -3, 3, 3 do
 			for z = -3, 3, 3 do
-				local vec = Vector3.new(x, y, z)
+				local vec = vector.create(x, y, z)
 				if vec.Y ~= 0 and (vec.X ~= 0 or vec.Z ~= 0) then
 					continue
 				end
 	
-				if vec ~= Vector3.zero then 
+				if vec ~= vector.zero then 
 					table.insert(adjacent, vec)
 				end
 			end
@@ -1257,7 +1257,7 @@ run(function()
 		for x = s.X, e.X, 3 do
 			for y = s.Y, e.Y, 3 do
 				for z = s.Z, e.Z, 3 do
-					local vec = Vector3.new(x, y, z)
+					local vec = vector.create(x, y, z)
 					if store.blocks[vec] then
 						table.insert(list, vec)
 					end
@@ -1268,22 +1268,22 @@ run(function()
 	end
 	
 	local function roundPos(vec)
-		return Vector3.new(math.round(vec.X / 3) * 3, math.round(vec.Y / 3) * 3, math.round(vec.Z / 3) * 3)
+		return vector.create(math.round(vec.X / 3) * 3, math.round(vec.Y / 3) * 3, math.round(vec.Z / 3) * 3)
 	end
 	
 	local function nearCorner(poscheck, pos)
-		local startpos = poscheck - Vector3.new(3, 3, 3)
-		local endpos = poscheck + Vector3.new(3, 3, 3)
+		local startpos = poscheck - vector.create(3, 3, 3)
+		local endpos = poscheck + vector.create(3, 3, 3)
 		local check = poscheck + (pos - poscheck).Unit * 100
 		if math.abs(check.Y - startpos.Y) > 3 then
-			return Vector3.new(poscheck.X, math.clamp(check.Y, startpos.Y, endpos.Y), poscheck.Z)
+			return vector.create(poscheck.X, math.clamp(check.Y, startpos.Y, endpos.Y), poscheck.Z)
 		end
-		return Vector3.new(math.clamp(check.X, startpos.X, endpos.X), math.clamp(check.Y, startpos.Y, endpos.Y), math.clamp(check.Z, startpos.Z, endpos.Z))
+		return vector.create(math.clamp(check.X, startpos.X, endpos.X), math.clamp(check.Y, startpos.Y, endpos.Y), math.clamp(check.Z, startpos.Z, endpos.Z))
 	end
 	
 	local function blockProximity(pos)
 		local mag, returned = 60
-		local tab = getBlocksInPoints(pos - Vector3.new(21, 21, 21), pos + Vector3.new(21, 21, 21))
+		local tab = getBlocksInPoints(pos - vector.create(21, 21, 21), pos + vector.create(21, 21, 21))
 		for _, v in tab do
 			local blockpos = nearCorner(v, pos)
 			local newmag = (pos - blockpos).Magnitude
@@ -1319,15 +1319,15 @@ run(function()
 						if wool then
 							local root = entitylib.character.RootPart
 							if Tower.Enabled and inputService:IsKeyDown(Enum.KeyCode.Space) and (not inputService:GetFocusedTextBox()) then
-								root.Velocity = Vector3.new(root.Velocity.X, 38, root.Velocity.Z)
+								root.Velocity = vector.create(root.Velocity.X, 38, root.Velocity.Z)
 							end
 	
 							for i = Expand.Value, 1, -1 do
-								local currentpos = roundPos(root.Position - Vector3.new(0, entitylib.character.HipHeight + (Downwards.Enabled and inputService:IsKeyDown(Enum.KeyCode.LeftShift) and 4.5 or 1.5), 0) + entitylib.character.Humanoid.MoveDirection * (i * 3))
+								local currentpos = roundPos(root.Position - vector.create(0, entitylib.character.HipHeight + (Downwards.Enabled and inputService:IsKeyDown(Enum.KeyCode.LeftShift) and 4.5 or 1.5), 0) + entitylib.character.Humanoid.MoveDirection * (i * 3))
 								if Diagonal.Enabled then
 									if math.abs(math.round(math.deg(math.atan2(-entitylib.character.Humanoid.MoveDirection.X, -entitylib.character.Humanoid.MoveDirection.Z)) / 45) * 45) % 90 == 45 then
 										local dt = (lastpos - currentpos)
-										if ((dt.X == 0 and dt.Z ~= 0) or (dt.X ~= 0 and dt.Z == 0)) and ((lastpos - root.Position) * Vector3.new(1, 0, 1)).Magnitude < 2.5 then
+										if ((dt.X == 0 and dt.Z ~= 0) or (dt.X ~= 0 and dt.Z == 0)) and ((lastpos - root.Position) * vector.create(1, 0, 1)).Magnitude < 2.5 then
 											currentpos = lastpos
 										end
 									end
@@ -1338,7 +1338,7 @@ run(function()
 									blockpos = checkAdjacent(currentpos) and currentpos or blockProximity(currentpos)
 									if blockpos then
 										local block = skywars.ItemMeta[wool.Rewrite.Type:gsub('{TeamId}', skywars.TeamController:getPlayerTeamId(lplr) or 'White')]
-										skywars.BlockController:placeBlock(blockpos, wool.Name, block, Vector3.zero)
+										skywars.BlockController:placeBlock(blockpos, wool.Name, block, vector.zero)
 									end
 								end
 								lastpos = currentpos
@@ -1577,7 +1577,7 @@ run(function()
 			local percent = math.clamp(health / maxHealth, 0, 1)
 			local cleanCheck = true
 			local part = Instance.new('Part')
-			part.Size = Vector3.one
+			part.Size = vector.one
 			part.CFrame = block.PrimaryPart.CFrame
 			part.Transparency = 1
 			part.Anchored = true
@@ -1587,7 +1587,7 @@ run(function()
 	
 			BreakerUI = skywars.Roact.mount(create('BillboardGui', {
 				Size = UDim2.fromOffset(249, 102),
-				StudsOffset = Vector3.new(0, 2.5, 0),
+				StudsOffset = vector.create(0, 2.5, 0),
 				Adornee = part,
 				MaxDistance = 40,
 				AlwaysOnTop = true
@@ -1694,7 +1694,7 @@ run(function()
 								if store.hand.Melee then 
 									skywars.Remotes[remotes['MeleeController:attemptStrikeDesktop']]:fire(v)
 								elseif store.hand.Pickaxe then 
-									skywars.Remotes[remotes.hitBlock]:fire((v.PrimaryPart.Position + Vector3.new(0, 1.5, 0)) // 1)
+									skywars.Remotes[remotes.hitBlock]:fire((v.PrimaryPart.Position + vector.create(0, 1.5, 0)) // 1)
 								end
 							end
 						end

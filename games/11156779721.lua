@@ -98,7 +98,7 @@ run(function()
 				GetPropertyChangedSignal = function() end
 			}
 			local humrootpart = hum and waitForChildOfType(hum, 'RootPart', workspace.StreamingEnabled and 9e9 or 10, true)
-			local head = char:WaitForChild('Head', 10) or humrootpart and {Name = 'Head', Size = Vector3.one, Parent = char}
+			local head = char:WaitForChild('Head', 10) or humrootpart and {Name = 'Head', Size = vector.one, Parent = char}
 
 			if hum and humrootpart then
 				local entity = {
@@ -213,11 +213,11 @@ run(function()
 						})
 
 						if #plrs > 0 then
-							local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
+							local localfacing = entitylib.character.RootPart.CFrame.LookVector * vector.create(1, 0, 1)
 							block(false)
 							for i, v in plrs do
 								local delta = (v.RootPart.Position - entitylib.character.RootPart.Position)
-								local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
+								local angle = math.acos(localfacing:Dot((delta * vector.create(1, 0, 1)).Unit))
 								if angle > (math.rad(AngleSlider.Value) / 2) then continue end
 								table.insert(attacked, v)
 								targetinfo.Targets[v] = tick() + 1
@@ -304,7 +304,7 @@ run(function()
 					local box = Instance.new('BoxHandleAdornment')
 					box.Adornee = nil
 					box.AlwaysOnTop = true
-					box.Size = Vector3.new(3, 5, 3)
+					box.Size = vector.create(3, 5, 3)
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.ZIndex = 0
 					box.Parent = vape.gui
@@ -346,13 +346,13 @@ run(function()
 					end
 
 					for i, v in Particles do
-						v.Position = attacked[i] and attacked[i].RootPart.Position or Vector3.new(9e9, 9e9, 9e9)
+						v.Position = attacked[i] and attacked[i].RootPart.Position or vector.create(9e9, 9e9, 9e9)
 						v.Parent = attacked[i] and gameCamera or nil
 					end
 				end
 				for i = 1, 10 do
 					local part = Instance.new('Part')
-					part.Size = Vector3.one
+					part.Size = vector.one
 					part.Anchored = true
 					part.CanCollide = false
 					part.Transparency = 1
@@ -642,7 +642,7 @@ run(function()
 		if not BreakerPart then
 			local percent = math.clamp(health / maxHealth, 0, 1)
 			local part = Instance.new('Part')
-			part.Size = Vector3.one
+			part.Size = vector.one
 			part.CFrame = block.PrimaryPart.CFrame
 			part.Transparency = 1
 			part.Anchored = true
@@ -651,7 +651,7 @@ run(function()
 			BreakerPart = part
 			local billboard = Instance.new('BillboardGui')
 			billboard.Size = UDim2.fromOffset(249, 102)
-			billboard.StudsOffset = Vector3.new(0, 2.5, 0)
+			billboard.StudsOffset = vector.create(0, 2.5, 0)
 			billboard.Adornee = part
 			billboard.MaxDistance = 100
 			billboard.AlwaysOnTop = true

@@ -14,7 +14,7 @@ end
 local function downloadFile(path, func)
 	if not isfile(path) then
 		local suc, res = pcall(function() 
-			return game:HttpGet('https://raw.githubusercontent.com/7GrandDadPGN/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true) 
+			return game:HttpGet('https://raw.githubusercontent.com/jhki0/VapeV4ForRoblox/'..readfile('newvape/profiles/commit.txt')..'/'..select(1, path:gsub('newvape/', '')), true) 
 		end)
 		if not suc or res == '404: Not Found' then 
 			error(res) 
@@ -290,7 +290,7 @@ run(function()
 
 			local hum = {
 				HipHeight = 2, 
-				MoveDirection = Vector3.zero, 
+				MoveDirection = vector.zero, 
 				Health = 100, 
 				MaxHealth = 100, 
 				GetState = function() 
@@ -309,11 +309,11 @@ run(function()
 			end
 
 			local humrootpart = char:WaitForChild('HumanoidRootPart', 10)
-			local head = humrootpart and setmetatable({Name = 'Head', Size = Vector3.one, Parent = char}, {__index = function(t, k)
+			local head = humrootpart and setmetatable({Name = 'Head', Size = vector.one, Parent = char}, {__index = function(t, k)
 				if k == 'Position' then
-					return humrootpart.Position + Vector3.new(0, 3, 0)
+					return humrootpart.Position + vector.create(0, 3, 0)
 				elseif k == 'CFrame' then
-					return humrootpart.CFrame + Vector3.new(0, 3, 0)
+					return humrootpart.CFrame + vector.create(0, 3, 0)
 				end
 			end})
 
@@ -394,7 +394,7 @@ run(function()
 					end
 	
 					if inputService:IsMouseButtonPressed(Enum.UserInputType.MouseButton2) then 
-						local origin = entitylib.isAlive and frontlines.Main.globals.fpv_sol_instances.camera_bone.WorldPosition or Vector3.zero
+						local origin = entitylib.isAlive and frontlines.Main.globals.fpv_sol_instances.camera_bone.WorldPosition or vector.zero
 						local ent = entitylib.EntityMouse({
 							Range = FOV.Value,
 							Players = true,
@@ -410,7 +410,7 @@ run(function()
 								rayCheck.CollisionGroup = ent.RootPart.CollisionGroup
 								local velo = gun.fire_params.muzzle_velocity
 								local targetpos = ent.RootPart.Root_M.Spine1_M.Spine2_M.Chest_M.Neck_M.Head_M.WorldCFrame.Position
-								local calc = prediction.SolveTrajectory(origin, velo, workspace.Gravity, targetpos, Vector3.zero, workspace.Gravity, ent.HipHeight, nil, rayCheck)
+								local calc = prediction.SolveTrajectory(origin, velo, workspace.Gravity, targetpos, vector.zero, workspace.Gravity, ent.HipHeight, nil, rayCheck)
 								
 								if calc then 
 									local pos = gameCamera:WorldToViewportPoint(calc)
@@ -556,7 +556,7 @@ run(function()
 							local origin = gameCamera.CFrame.Position
 							ProjectileRaycast.FilterDescendantsInstances = {gameCamera, ent.Character}
 							ProjectileRaycast.CollisionGroup = targetPart.CollisionGroup
-							local calc = prediction.SolveTrajectory(pos, velo, workspace.Gravity, targetpos, Vector3.zero, workspace.Gravity, ent.HipHeight, nil, ProjectileRaycast)
+							local calc = prediction.SolveTrajectory(pos, velo, workspace.Gravity, targetpos, vector.zero, workspace.Gravity, ent.HipHeight, nil, ProjectileRaycast)
 							if calc then
 								dir = -CFrame.new(pos, calc).ZVector * velo
 							end
@@ -575,7 +575,7 @@ run(function()
 							Range = Range.Value,
 							Wallcheck = Target.Walls.Enabled or nil,
 							Part = 'RootPart',
-							Origin = entitylib.isAlive and frontlines.Main.globals.fpv_sol_instances.camera_bone.WorldPosition or Vector3.zero,
+							Origin = entitylib.isAlive and frontlines.Main.globals.fpv_sol_instances.camera_bone.WorldPosition or vector.zero,
 							Players = Target.Players.Enabled,
 							NPCs = Target.NPCs.Enabled
 						})
@@ -779,7 +779,7 @@ run(function()
 			if callback then
 				GunModifications:Clean(hookEvent('START_FPV_SOL_RECOIL_ANIM', function()
 					if Recoil.Enabled then
-						frontlines.Main.globals.fpv_sol_recoil.attitude_delta = Vector3.zero
+						frontlines.Main.globals.fpv_sol_recoil.attitude_delta = vector.zero
 						return true
 					end
 				end))
@@ -882,11 +882,11 @@ run(function()
 	
 						if #plrs > 0 then
 							local gun = frontlines.Main.globals.fpv_sol_equipment.curr_equipment
-							local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
+							local localfacing = entitylib.character.RootPart.CFrame.LookVector * vector.create(1, 0, 1)
 	
 							for i, v in plrs do
 								local delta = (v.RootPart.Position - entitylib.character.RootPart.Position)
-								local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
+								local angle = math.acos(localfacing:Dot((delta * vector.create(1, 0, 1)).Unit))
 								if angle > (math.rad(Angle.Value) / 2) then continue end
 								table.insert(attacked, {Entity = v, Check = delta.Magnitude > AttackRange.Value and BoxSwingColor or BoxAttackColor})
 								targetinfo.Targets[v] = tick() + 1
@@ -908,7 +908,7 @@ run(function()
 										if knifecheck then
 											frontlines.Main.globals.ctrl_states.trigger = true
 											frontlines.Main.globals.ctrl_ts.trigger = time()
-											frontlines.Main.exe_set(frontlines.Main.exe_set_t.FPV_SOL_MELEE_SOL_HIT, gun, part, Vector3.zero)
+											frontlines.Main.exe_set(frontlines.Main.exe_set_t.FPV_SOL_MELEE_SOL_HIT, gun, part, vector.zero)
 											if vape.ThreadFix then 
 												setthreadidentity(8) 
 											end
@@ -932,7 +932,7 @@ run(function()
 					end
 	
 					for i, v in Particles do
-						v.Position = attacked[i] and attacked[i].Entity.RootPart.Position or Vector3.new(9e9, 9e9, 9e9)
+						v.Position = attacked[i] and attacked[i].Entity.RootPart.Position or vector.create(9e9, 9e9, 9e9)
 						v.Parent = attacked[i] and gameCamera or nil
 					end
 	
@@ -992,7 +992,7 @@ run(function()
 					local box = Instance.new('BoxHandleAdornment')
 					box.Adornee = nil
 					box.AlwaysOnTop = true
-					box.Size = Vector3.new(3, 5, 3)
+					box.Size = vector.create(3, 5, 3)
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.ZIndex = 0
 					box.Parent = vape.gui
@@ -1029,7 +1029,7 @@ run(function()
 			if callback then
 				for i = 1, 10 do
 					local part = Instance.new('Part')
-					part.Size = Vector3.one
+					part.Size = vector.one
 					part.Anchored = true
 					part.CanCollide = false
 					part.Transparency = 1
@@ -1149,7 +1149,7 @@ run(function()
 	local maxy = frontlines.Main.consts.fpv_sol_movement.MAX_ATT_X
 	local yaw, pitch = 0, 90
 	for i = 1, 40 do 
-		table.insert(aimtable, Vector3.zero) 
+		table.insert(aimtable, vector.zero) 
 	end
 	
 	SpinBot = vape.Categories.Blatant:CreateModule({
@@ -1169,7 +1169,7 @@ run(function()
 	
 				repeat
 					aimtable = table.clone(frontlines.Main.globals.sol_attitudes)
-					aimtable[frontlines.Main.globals.cli_state.fpv_sol_id] = Vector3.new(math.clamp(math.rad(pitch), -maxy, maxy), math.rad(yaw))
+					aimtable[frontlines.Main.globals.cli_state.fpv_sol_id] = vector.create(math.clamp(math.rad(pitch), -maxy, maxy), math.rad(yaw))
 					yaw += task.wait() * (Yaw.Value == 'Clockwise' and (Speed.Value or 0) or -(Speed.Value or 0)) * 1000
 				until not SpinBot.Enabled
 			else
@@ -1499,7 +1499,7 @@ run(function()
 						end)
 					else
 						local obj = Instance.new('Part')
-						obj.Size = Vector3.new(0.05, 0.05, 1000)
+						obj.Size = vector.create(0.05, 0.05, 1000)
 						obj.CFrame = CFrame.lookAt(origin + (velocity.Unit * 500), origin + (velocity.Unit * 1000))
 						obj.CanCollide = false
 						obj.CanQuery = false

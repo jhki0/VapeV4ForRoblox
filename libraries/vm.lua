@@ -178,7 +178,7 @@ local LUA_GENERALIZED_TERMINATOR = -2
 
 local function luau_newsettings()
 	return {
-		vectorCtor = Vector3.new,
+		vectorCtor = vector.create,
 		vectorSize = 4,
 		useNativeNamecall = false,
 		namecallHandler = function() error("Native __namecall handler was not provided") end,

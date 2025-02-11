@@ -213,7 +213,7 @@ local function getBlocksInPoints(s, e)
 	for x = s.X, e.X do
 		for y = s.Y, e.Y do
 			for z = s.Z, e.Z do
-				local vec = Vector3.new(x, y, z)
+				local vec = vector.create(x, y, z)
 				if blocks:getBlockAt(vec) then
 					table.insert(list, vec * 3)
 				end
@@ -300,7 +300,7 @@ local function removeTags(str)
 end
 
 local function roundPos(vec)
-	return Vector3.new(math.round(vec.X / 3) * 3, math.round(vec.Y / 3) * 3, math.round(vec.Z / 3) * 3)
+	return vector.create(math.round(vec.X / 3) * 3, math.round(vec.Y / 3) * 3, math.round(vec.Z / 3) * 3)
 end
 
 local function switchItem(tool, delayTime)
@@ -387,9 +387,9 @@ local sortmethods = {
 	end,
 	Angle = function(a, b)
 		local selfrootpos = entitylib.character.RootPart.Position
-		local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
-		local angle = math.acos(localfacing:Dot(((a.Entity.RootPart.Position - selfrootpos) * Vector3.new(1, 0, 1)).Unit))
-		local angle2 = math.acos(localfacing:Dot(((b.Entity.RootPart.Position - selfrootpos) * Vector3.new(1, 0, 1)).Unit))
+		local localfacing = entitylib.character.RootPart.CFrame.LookVector * vector.create(1, 0, 1)
+		local angle = math.acos(localfacing:Dot(((a.Entity.RootPart.Position - selfrootpos) * vector.create(1, 0, 1)).Unit))
+		local angle2 = math.acos(localfacing:Dot(((b.Entity.RootPart.Position - selfrootpos) * vector.create(1, 0, 1)).Unit))
 		return angle < angle2
 	end
 }
@@ -796,7 +796,7 @@ run(function()
 		return OldBreak(self, breakTable, plr)
 	end
 
-	local cache, blockhealthbar = {}, {blockHealth = -1, breakingBlockPosition = Vector3.zero}
+	local cache, blockhealthbar = {}, {blockHealth = -1, breakingBlockPosition = vector.zero}
 	store.blockPlacer = bedwars.BlockPlacer.new(bedwars.BlockEngine, 'wool_white')
 
 	local function getBlockHealth(block, blockpos)
@@ -923,7 +923,7 @@ run(function()
 						if blockhealthbar.blockHealth <= 0 then
 							bedwars.BlockBreaker.breakEffect:playBreak(dblock.Name, dpos, lplr)
 							bedwars.BlockBreaker.healthbarMaid:DoCleaning()
-							blockhealthbar.breakingBlockPosition = Vector3.zero
+							blockhealthbar.breakingBlockPosition = vector.zero
 						else
 							bedwars.BlockBreaker.breakEffect:playHit(dblock.Name, dpos, lplr)
 						end
@@ -1177,8 +1177,8 @@ run(function()
 	
 						if ent then
 							local delta = (ent.RootPart.Position - entitylib.character.RootPart.Position)
-							local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
-							local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
+							local localfacing = entitylib.character.RootPart.CFrame.LookVector * vector.create(1, 0, 1)
+							local angle = math.acos(localfacing:Dot((delta * vector.create(1, 0, 1)).Unit))
 							if angle >= (math.rad(AngleSlider.Value) / 2) then return end
 							targetinfo.Targets[ent] = tick() + 1
 							gameCamera.CFrame = gameCamera.CFrame:Lerp(CFrame.lookAt(gameCamera.CFrame.p, ent.RootPart.Position), (AimSpeed.Value + (StrafeIncrease.Enabled and (inputService:IsKeyDown(Enum.KeyCode.A) or inputService:IsKeyDown(Enum.KeyCode.D)) and 10 or 0)) * dt)
@@ -1532,13 +1532,13 @@ run(function()
 
 	local function getNearGround()
 		local localPosition, mag, closest = entitylib.character.RootPart.Position, 60
-		local blocks = getBlocksInPoints(bedwars.BlockController:getBlockPosition(localPosition - Vector3.new(30, 30, 30)), bedwars.BlockController:getBlockPosition(localPosition + Vector3.new(30, 30, 30)))
+		local blocks = getBlocksInPoints(bedwars.BlockController:getBlockPosition(localPosition - vector.create(30, 30, 30)), bedwars.BlockController:getBlockPosition(localPosition + vector.create(30, 30, 30)))
 
 		for _, v in blocks do
-			if not getPlacedBlock(v + Vector3.new(0, 3, 0)) then
+			if not getPlacedBlock(v + vector.create(0, 3, 0)) then
 				local newmag = (localPosition - v).Magnitude
 				if newmag < mag then
-					mag, closest = newmag, v + Vector3.new(0, 3, 0)
+					mag, closest = newmag, v + vector.create(0, 3, 0)
 				end
 			end
 		end
@@ -1551,7 +1551,7 @@ run(function()
 		local mag = math.huge
 		for _, pos in bedwars.BlockController:getStore():getAllBlockPositions() do
 			pos = pos * 3
-			if pos.Y < mag and not getPlacedBlock(pos + Vector3.new(0, 3, 0)) then
+			if pos.Y < mag and not getPlacedBlock(pos + vector.create(0, 3, 0)) then
 				mag = pos.Y
 			end
 		end
@@ -1568,11 +1568,11 @@ run(function()
 				local pos, debounce = getLowGround(), tick()
 				if pos ~= math.huge then
 					AntiFallPart = Instance.new('Part')
-					AntiFallPart.Size = Vector3.new(10000, 1, 10000)
+					AntiFallPart.Size = vector.create(10000, 1, 10000)
 					AntiFallPart.Transparency = 1 - Color.Opacity
 					AntiFallPart.Material = Enum.Material[Material.Value]
 					AntiFallPart.Color = Color3.fromHSV(Color.Hue, Color.Sat, Color.Value)
-					AntiFallPart.Position = Vector3.new(0, pos - 2, 0)
+					AntiFallPart.Position = vector.create(0, pos - 2, 0)
 					AntiFallPart.CanCollide = Mode.Value == 'Collide'
 					AntiFallPart.Anchored = true
 					AntiFallPart.CanQuery = false
@@ -1594,27 +1594,27 @@ run(function()
 										end
 
 										if entitylib.isAlive and lplr:GetAttribute('LastTeleported') == lastTeleport then
-											local delta = ((top - entitylib.character.RootPart.Position) * Vector3.new(1, 0, 1))
+											local delta = ((top - entitylib.character.RootPart.Position) * vector.create(1, 0, 1))
 											local root = entitylib.character.RootPart
-											AntiFallDirection = delta.Unit == delta.Unit and delta.Unit or Vector3.zero
-											root.Velocity *= Vector3.new(1, 0, 1)
+											AntiFallDirection = delta.Unit == delta.Unit and delta.Unit or vector.zero
+											root.Velocity *= vector.create(1, 0, 1)
 											rayCheck.FilterDescendantsInstances = {gameCamera, lplr.Character}
 											rayCheck.CollisionGroup = root.CollisionGroup
 
 											local ray = workspace:Raycast(root.Position, AntiFallDirection, rayCheck)
 											if ray then
 												for _ = 1, 10 do
-													local dpos = roundPos(ray.Position + ray.Normal * 1.5) + Vector3.new(0, 3, 0)
+													local dpos = roundPos(ray.Position + ray.Normal * 1.5) + vector.create(0, 3, 0)
 													if not getPlacedBlock(dpos) then
-														top = Vector3.new(top.X, pos.Y, top.Z)
+														top = vector.create(top.X, pos.Y, top.Z)
 														break
 													end
 												end
 											end
 
-											root.CFrame += Vector3.new(0, top.Y - root.Position.Y, 0)
+											root.CFrame += vector.create(0, top.Y - root.Position.Y, 0)
 											if not frictionTable.Speed then
-												root.AssemblyLinearVelocity = (AntiFallDirection * getSpeed()) + Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+												root.AssemblyLinearVelocity = (AntiFallDirection * getSpeed()) + vector.create(0, root.AssemblyLinearVelocity.Y, 0)
 											end
 
 											if delta.Magnitude < 1 then
@@ -1629,7 +1629,7 @@ run(function()
 									AntiFall:Clean(connection)
 								end
 							elseif Mode.Value == 'Velocity' then
-								entitylib.character.RootPart.Velocity = Vector3.new(entitylib.character.RootPart.Velocity.X, 100, entitylib.character.RootPart.Velocity.Z)
+								entitylib.character.RootPart.Velocity = vector.create(entitylib.character.RootPart.Velocity.X, 100, entitylib.character.RootPart.Velocity.Z)
 							end
 						end
 					end))
@@ -1735,12 +1735,12 @@ run(function()
 								local airleft = (tick() - entitylib.character.AirTime)
 								if airleft > 2 then
 									if not oldy then
-										local ray = workspace:Raycast(root.Position, Vector3.new(0, -1000, 0), rayCheck)
+										local ray = workspace:Raycast(root.Position, vector.create(0, -1000, 0), rayCheck)
 										if ray and TP.Enabled then
 											tpToggle = false
 											oldy = root.Position.Y
 											tpTick = tick() + 0.11
-											root.CFrame = CFrame.lookAlong(Vector3.new(root.Position.X, ray.Position.Y + entitylib.character.HipHeight, root.Position.Z), root.CFrame.LookVector)
+											root.CFrame = CFrame.lookAlong(vector.create(root.Position.X, ray.Position.Y + entitylib.character.HipHeight, root.Position.Z), root.CFrame.LookVector)
 										elseif airleft > 2 then
 											local packet = store.damage[1]
 											if packet then
@@ -1761,7 +1761,7 @@ run(function()
 							else
 								if oldy then
 									if tpTick < tick() then
-										local newpos = Vector3.new(root.Position.X, oldy, root.Position.Z)
+										local newpos = vector.create(root.Position.X, oldy, root.Position.Z)
 										root.CFrame = CFrame.lookAlong(newpos, root.CFrame.LookVector)
 										tpToggle = true
 										oldy = nil
@@ -1773,7 +1773,7 @@ run(function()
 						end
 
 						root.CFrame += destination
-						root.AssemblyLinearVelocity = (moveDirection * velo) + Vector3.new(0, mass, 0)
+						root.AssemblyLinearVelocity = (moveDirection * velo) + vector.create(0, mass, 0)
 					end
 				end))
 				Fly:Clean(inputService.InputBegan:Connect(function(input)
@@ -1974,7 +1974,7 @@ run(function()
 							end
 						end
 						root.CFrame += destination
-						root.AssemblyLinearVelocity = (moveDirection * velo) + Vector3.new(0, mass, 0)
+						root.AssemblyLinearVelocity = (moveDirection * velo) + vector.create(0, mass, 0)
 	
 						local speedCFrame = {oldroot.CFrame:GetComponents()}
 						if isnetworkowner(oldroot) then
@@ -1982,7 +1982,7 @@ run(function()
 							speedCFrame[3] = clone.CFrame.Z
 							if speedCFrame[2] < 2000 then speedCFrame[2] = 100000 end
 							oldroot.CFrame = CFrame.new(unpack(speedCFrame))
-							oldroot.Velocity = Vector3.new(clone.Velocity.X, oldroot.Velocity.Y, clone.Velocity.Z)
+							oldroot.Velocity = vector.create(clone.Velocity.X, oldroot.Velocity.Y, clone.Velocity.Z)
 						else
 							speedCFrame[2] = clone.CFrame.Y
 							clone.CFrame = CFrame.new(unpack(speedCFrame))
@@ -2019,20 +2019,20 @@ run(function()
 					proper = false
 					overlapCheck.FilterDescendantsInstances = {lplr.Character, gameCamera}
 					overlapCheck.CollisionGroup = oldroot.CollisionGroup
-					local ray = workspace:Blockcast(CFrame.new(oldroot.Position.X, clone.CFrame.p.Y, oldroot.Position.Z), Vector3.new(3, entitylib.character.HipHeight, 3), Vector3.new(0, -1000, 0), rayCheck)
+					local ray = workspace:Blockcast(CFrame.new(oldroot.Position.X, clone.CFrame.p.Y, oldroot.Position.Z), vector.create(3, entitylib.character.HipHeight, 3), vector.create(0, -1000, 0), rayCheck)
 					local origcf = {clone.CFrame:GetComponents()}
 					origcf[1] = oldroot.Position.X
 					origcf[2] = ray and ray.Position.Y + entitylib.character.HipHeight or clone.CFrame.p.Y
 					origcf[3] = oldroot.Position.Z
 					oldroot.CanCollide = true
 					oldroot.Transparency = 0
-					oldroot.Velocity = clone.Velocity * Vector3.new(1, 0, 1)
+					oldroot.Velocity = clone.Velocity * vector.create(1, 0, 1)
 					oldroot.CFrame = CFrame.new(unpack(origcf))
 	
 					local touched = false
 					local connection = runService.PreSimulation:Connect(function()
 						if oldroot then
-							oldroot.Velocity = Vector3.zero
+							oldroot.Velocity = vector.zero
 							valid = false
 							if touched then return end
 							local cf = {clone.CFrame:GetComponents()}
@@ -2044,9 +2044,9 @@ run(function()
 									return
 								end
 							end
-							if not workspace:Raycast(newcf.Position, Vector3.new(0, -entitylib.character.HipHeight, 0), rayCheck) then return end
+							if not workspace:Raycast(newcf.Position, vector.create(0, -entitylib.character.HipHeight, 0), rayCheck) then return end
 							oldroot.CFrame = newcf
-							oldroot.Velocity = (clone.Velocity * Vector3.new(1, 0, 1))
+							oldroot.Velocity = (clone.Velocity * vector.create(1, 0, 1))
 							valid = true
 						end
 					end)
@@ -2243,11 +2243,11 @@ run(function()
 						if #plrs > 0 then
 							switchItem(sword.tool, 0)
 							local selfpos = entitylib.character.RootPart.Position
-							local localfacing = entitylib.character.RootPart.CFrame.LookVector * Vector3.new(1, 0, 1)
+							local localfacing = entitylib.character.RootPart.CFrame.LookVector * vector.create(1, 0, 1)
 
 							for _, v in plrs do
 								local delta = (v.RootPart.Position - selfpos)
-								local angle = math.acos(localfacing:Dot((delta * Vector3.new(1, 0, 1)).Unit))
+								local angle = math.acos(localfacing:Dot((delta * vector.create(1, 0, 1)).Unit))
 								if angle > (math.rad(AngleSlider.Value) / 2) then continue end
 
 								table.insert(attacked, v)
@@ -2303,13 +2303,13 @@ run(function()
 					end
 
 					for i, v in Particles do
-						v.Position = attacked[i] and attacked[i].RootPart.Position or Vector3.new(9e9, 9e9, 9e9)
+						v.Position = attacked[i] and attacked[i].RootPart.Position or vector.create(9e9, 9e9, 9e9)
 						v.Parent = attacked[i] and gameCamera or nil
 					end
 
 					if Face.Enabled and attacked[1] then
-						local vec = attacked[1].RootPart.Position * Vector3.new(1, 0, 1)
-						entitylib.character.RootPart.CFrame = CFrame.lookAt(entitylib.character.RootPart.Position, Vector3.new(vec.X, entitylib.character.RootPart.Position.Y, vec.Z))
+						local vec = attacked[1].RootPart.Position * vector.create(1, 0, 1)
+						entitylib.character.RootPart.CFrame = CFrame.lookAt(entitylib.character.RootPart.Position, vector.create(vec.X, entitylib.character.RootPart.Position.Y, vec.Z))
 					end
 
 					task.wait(#attacked > 0 and #attacked * 0.02 or 1 / UpdateRate.Value)
@@ -2394,7 +2394,7 @@ run(function()
 					local box = Instance.new('BoxHandleAdornment')
 					box.Adornee = nil
 					box.AlwaysOnTop = true
-					box.Size = Vector3.new(3, 5, 3)
+					box.Size = vector.create(3, 5, 3)
 					box.CFrame = CFrame.new(0, -0.5, 0)
 					box.ZIndex = 0
 					box.Parent = vape.gui
@@ -2424,7 +2424,7 @@ run(function()
 			if callback then
 				for i = 1, 10 do
 					local part = Instance.new('Part')
-					part.Size = Vector3.new(2, 4, 2)
+					part.Size = vector.create(2, 4, 2)
 					part.Anchored = true
 					part.CanCollide = false
 					part.Transparency = 1
@@ -2580,7 +2580,7 @@ run(function()
 		if not pos then return end
 	
 		pos = pos - entitylib.character.RootPart.CFrame.LookVector * 0.1
-		local shootPosition = (CFrame.lookAlong(pos, Vector3.new(0, -speed, 0)) * CFrame.new(Vector3.new(-bedwars.BowConstantsTable.RelX, -bedwars.BowConstantsTable.RelY, -bedwars.BowConstantsTable.RelZ)))
+		local shootPosition = (CFrame.lookAlong(pos, vector.create(0, -speed, 0)) * CFrame.new(vector.create(-bedwars.BowConstantsTable.RelX, -bedwars.BowConstantsTable.RelY, -bedwars.BowConstantsTable.RelZ)))
 		switchItem(item.tool, 0)
 		task.wait(0.1)
 		bedwars.ProjectileController:createLocalProjectile(bedwars.ProjectileMeta[proj], proj, proj, shootPosition.Position, '', shootPosition.LookVector * speed, {drawDurationSeconds = 1})
@@ -2595,8 +2595,8 @@ run(function()
 	
 	local LongJumpMethods = {
 		cannon = function(_, pos)
-			pos = pos - Vector3.new(0, (entitylib.character.HipHeight + (entitylib.character.RootPart.Size.Y / 2)) - 3, 0)
-			local rounded = Vector3.new(math.round(pos.X / 3) * 3, math.round(pos.Y / 3) * 3, math.round(pos.Z / 3) * 3)
+			pos = pos - vector.create(0, (entitylib.character.HipHeight + (entitylib.character.RootPart.Size.Y / 2)) - 3, 0)
+			local rounded = vector.create(math.round(pos.X / 3) * 3, math.round(pos.Y / 3) * 3, math.round(pos.Z / 3) * 3)
 			bedwars.placeBlock(rounded, 'cannon', false)
 	
 			task.delay(0, function()
@@ -2627,7 +2627,7 @@ run(function()
 								bedwars.breakBlock(block, true, true)
 								JumpSpeed = 5.25 * Value.Value
 								JumpTick = tick() + 2.3
-								Direction = Vector3.new(vec.X, 0, vec.Z).Unit
+								Direction = vector.create(vec.X, 0, vec.Z).Unit
 								break
 							end
 							task.wait(0.1)
@@ -2641,8 +2641,8 @@ run(function()
 				local vec = entitylib.character.RootPart.CFrame.LookVector
 				JumpSpeed = 4.5 * Value.Value
 				JumpTick = tick() + 2.5
-				Direction = Vector3.new(vec.X, 0, vec.Z).Unit
-				entitylib.character.RootPart.Velocity = Vector3.zero
+				Direction = vector.create(vec.X, 0, vec.Z).Unit
+				entitylib.character.RootPart.Velocity = vector.zero
 			end))
 	
 			if not bedwars.AbilityController:canUseAbility('CAT_POUNCE') then
@@ -2669,13 +2669,13 @@ run(function()
 				local vec = entitylib.character.RootPart.CFrame.LookVector
 				JumpSpeed = 2.5 * Value.Value
 				JumpTick = tick() + 2.5
-				Direction = Vector3.new(vec.X, 0, vec.Z).Unit
+				Direction = vector.create(vec.X, 0, vec.Z).Unit
 			end
 		end,
 		tnt = function(item, pos)
-			pos = pos - Vector3.new(0, (entitylib.character.HipHeight + (entitylib.character.RootPart.Size.Y / 2)) - 3, 0)
-			local rounded = Vector3.new(math.round(pos.X / 3) * 3, math.round(pos.Y / 3) * 3, math.round(pos.Z / 3) * 3)
-			start = Vector3.new(rounded.X, start.Y, rounded.Z) + (entitylib.character.RootPart.CFrame.LookVector * (item.itemType == 'pirate_gunpowder_barrel' and 2.6 or 0.2))
+			pos = pos - vector.create(0, (entitylib.character.HipHeight + (entitylib.character.RootPart.Size.Y / 2)) - 3, 0)
+			local rounded = vector.create(math.round(pos.X / 3) * 3, math.round(pos.Y / 3) * 3, math.round(pos.Z / 3) * 3)
+			start = vector.create(rounded.X, start.Y, rounded.Z) + (entitylib.character.RootPart.CFrame.LookVector * (item.itemType == 'pirate_gunpowder_barrel' and 2.6 or 0.2))
 			bedwars.placeBlock(rounded, item.itemType, false)
 		end,
 		wood_dao = function(item, pos)
@@ -2694,7 +2694,7 @@ run(function()
 				})
 				JumpSpeed = 4.5 * Value.Value
 				JumpTick = tick() + 2.4
-				Direction = Vector3.new(vec.X, 0, vec.Z).Unit
+				Direction = vector.create(vec.X, 0, vec.Z).Unit
 			end
 		end
 	}
@@ -2715,13 +2715,13 @@ run(function()
 					if damageTable.entityInstance == lplr.Character and damageTable.fromEntity == lplr.Character and (not damageTable.knockbackMultiplier or not damageTable.knockbackMultiplier.disabled) then
 						local knockbackBoost = Value.Value * (damageTable.knockbackMultiplier and damageTable.knockbackMultiplier.horizontal or 1)
 						if knockbackBoost >= JumpSpeed then
-							local pos = damageTable.fromPosition and Vector3.new(damageTable.fromPosition.X, damageTable.fromPosition.Y, damageTable.fromPosition.Z) or damageTable.fromEntity and damageTable.fromEntity.PrimaryPart.Position
+							local pos = damageTable.fromPosition and vector.create(damageTable.fromPosition.X, damageTable.fromPosition.Y, damageTable.fromPosition.Z) or damageTable.fromEntity and damageTable.fromEntity.PrimaryPart.Position
 							if not pos then return end
 							local vec = (entitylib.character.RootPart.Position - pos)
 							Extend = StoreDamage.Enabled
 							JumpSpeed = knockbackBoost
 							JumpTick = tick() + (StoreDamage.Enabled and 4.3 or 2.5)
-							Direction = Vector3.new(vec.X, 0, vec.Z).Unit
+							Direction = vector.create(vec.X, 0, vec.Z).Unit
 							if not StoreDamage.Enabled then return end
 							task.delay(0.1, function()
 								for i, v in store.damage do
@@ -2744,7 +2744,7 @@ run(function()
 						local vec = entitylib.character.RootPart.CFrame.LookVector
 						JumpSpeed = 2.5 * Value.Value
 						JumpTick = tick() + 3.5
-						Direction = Vector3.new(vec.X, 0, vec.Z).Unit
+						Direction = vector.create(vec.X, 0, vec.Z).Unit
 					end
 				end))
 	
@@ -2754,15 +2754,15 @@ run(function()
 					local root = entitylib.isAlive and entitylib.character.RootPart or nil
 					if root and isnetworkowner(root) then
 						if JumpTick > tick() then
-							root.AssemblyLinearVelocity = Direction * (getSpeed() + ((JumpTick - tick()) > 1.1 and JumpSpeed or 0)) + Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
+							root.AssemblyLinearVelocity = Direction * (getSpeed() + ((JumpTick - tick()) > 1.1 and JumpSpeed or 0)) + vector.create(0, root.AssemblyLinearVelocity.Y, 0)
 							if entitylib.character.Humanoid.FloorMaterial == Enum.Material.Air and not start then
-								root.AssemblyLinearVelocity += Vector3.new(0, dt * (workspace.Gravity - (Extend and 6 or 23)), 0)
+								root.AssemblyLinearVelocity += vector.create(0, dt * (workspace.Gravity - (Extend and 6 or 23)), 0)
 							else
-								root.AssemblyLinearVelocity = Vector3.new(root.AssemblyLinearVelocity.X, (Extend and 10 or 15), root.AssemblyLinearVelocity.Z)
+								root.AssemblyLinearVelocity = vector.create(root.AssemblyLinearVelocity.X, (Extend and 10 or 15), root.AssemblyLinearVelocity.Z)
 							end
 							start = nil
 						else
-							root.AssemblyLinearVelocity = Vector3.zero
+							root.AssemblyLinearVelocity = vector.zero
 							if start then
 								root.CFrame = CFrame.lookAlong(start, root.CFrame.LookVector)
 							end
@@ -2868,7 +2868,7 @@ run(function()
 						Players = Targets.Players.Enabled,
 						NPCs = Targets.NPCs.Enabled,
 						Wallcheck = Targets.Walls.Enabled,
-						Origin = entitylib.isAlive and (shootpos or entitylib.character.RootPart.Position) or Vector3.zero
+						Origin = entitylib.isAlive and (shootpos or entitylib.character.RootPart.Position) or vector.zero
 					})
 	
 					if plr then
@@ -2885,7 +2885,7 @@ run(function()
 						local lifetime = (worldmeta and meta.predictionLifetimeSec or meta.lifetimeSec or 3)
 						local gravity = (meta.gravitationalAcceleration or 196.2) * projmeta.gravityMultiplier
 						local projSpeed = (meta.launchVelocity or 100)
-						local offsetpos = pos + (projmeta.projectile == 'owl_projectile' and Vector3.zero or projmeta.fromPositionOffset)
+						local offsetpos = pos + (projmeta.projectile == 'owl_projectile' and vector.zero or projmeta.fromPositionOffset)
 						local balloons = plr.Character:GetAttribute('InflatedBalloons')
 						local playerGravity = workspace.Gravity
 	
@@ -2897,8 +2897,8 @@ run(function()
 							playerGravity = 6
 						end
 	
-						local newlook = CFrame.new(offsetpos, plr[TargetPart.Value].Position) * CFrame.new(projmeta.projectile == 'owl_projectile' and Vector3.zero or Vector3.new(bedwars.BowConstantsTable.RelX, bedwars.BowConstantsTable.RelY, bedwars.BowConstantsTable.RelZ))
-						local calc = prediction.SolveTrajectory(newlook.p, projSpeed, gravity, plr[TargetPart.Value].Position, projmeta.projectile == 'telepearl' and Vector3.zero or plr[TargetPart.Value].Velocity, playerGravity, plr.HipHeight, plr.Jumping and 42.6 or nil, rayCheck)
+						local newlook = CFrame.new(offsetpos, plr[TargetPart.Value].Position) * CFrame.new(projmeta.projectile == 'owl_projectile' and vector.zero or vector.create(bedwars.BowConstantsTable.RelX, bedwars.BowConstantsTable.RelY, bedwars.BowConstantsTable.RelZ))
+						local calc = prediction.SolveTrajectory(newlook.p, projSpeed, gravity, plr[TargetPart.Value].Position, projmeta.projectile == 'telepearl' and vector.zero or plr[TargetPart.Value].Velocity, playerGravity, plr.HipHeight, plr.Jumping and 42.6 or nil, rayCheck)
 						if calc then
 							targetinfo.Targets[plr] = tick() + 1
 							return {
@@ -3006,7 +3006,7 @@ run(function()
 	
 										task.spawn(function()
 											local dir, id = CFrame.lookAt(pos, calc).LookVector, httpService:GenerateGUID(true)
-											local shootPosition = (CFrame.new(pos, calc) * CFrame.new(Vector3.new(-bedwars.BowConstantsTable.RelX, -bedwars.BowConstantsTable.RelY, -bedwars.BowConstantsTable.RelZ))).Position
+											local shootPosition = (CFrame.new(pos, calc) * CFrame.new(vector.create(-bedwars.BowConstantsTable.RelX, -bedwars.BowConstantsTable.RelY, -bedwars.BowConstantsTable.RelZ))).Position
 											bedwars.ProjectileController:createLocalProjectile(meta, ammo, projectile, shootPosition, id, dir * projSpeed, {drawDurationSeconds = 1})
 											local res = projectileRemote:InvokeServer(item.tool, ammo, projectile, shootPosition, pos, dir * projSpeed, id, {drawDurationSeconds = 1, shotId = httpService:GenerateGUID(false)}, workspace:GetServerTimeNow() - 0.045)
 											if not res then
@@ -3093,8 +3093,8 @@ run(function()
 						end
 	
 						root.CFrame += destination
-						root.AssemblyLinearVelocity = (moveDirection * velo) + Vector3.new(0, root.AssemblyLinearVelocity.Y, 0)
-						if AutoJump.Enabled and (state == Enum.HumanoidStateType.Running or state == Enum.HumanoidStateType.Landed) and moveDirection ~= Vector3.zero and (Attacking or AlwaysJump.Enabled) then
+						root.AssemblyLinearVelocity = (moveDirection * velo) + vector.create(0, root.AssemblyLinearVelocity.Y, 0)
+						if AutoJump.Enabled and (state == Enum.HumanoidStateType.Running or state == Enum.HumanoidStateType.Landed) and moveDirection ~= vector.zero and (Attacking or AlwaysJump.Enabled) then
 							entitylib.character.Humanoid:ChangeState(Enum.HumanoidStateType.Jumping)
 						end
 					end
@@ -3151,7 +3151,7 @@ run(function()
 		for _, part in bedparts do
 			if part:IsA('BasePart') and part.Name ~= 'Blanket' then
 				local boxhandle = Instance.new('BoxHandleAdornment')
-				boxhandle.Size = part.Size + Vector3.new(.01, .01, .01)
+				boxhandle.Size = part.Size + vector.create(.01, .01, .01)
 				boxhandle.AlwaysOnTop = true
 				boxhandle.ZIndex = 2
 				boxhandle.Visible = true
@@ -3159,7 +3159,7 @@ run(function()
 				boxhandle.Color3 = part.Color
 				if part.Name == 'Legs' then
 					boxhandle.Color3 = Color3.fromRGB(167, 112, 64)
-					boxhandle.Size = part.Size + Vector3.new(.01, -1, .01)
+					boxhandle.Size = part.Size + vector.create(.01, -1, .01)
 					boxhandle.CFrame = CFrame.new(0, -0.4, 0)
 					boxhandle.ZIndex = 0
 				end
@@ -3245,7 +3245,7 @@ run(function()
 		local billboard = Instance.new('BillboardGui')
 		billboard.Parent = Folder
 		billboard.Name = icon
-		billboard.StudsOffsetWorldSpace = Vector3.new(0, 3, 0)
+		billboard.StudsOffsetWorldSpace = vector.create(0, 3, 0)
 		billboard.Size = UDim2.fromOffset(36, 36)
 		billboard.AlwaysOnTop = true
 		billboard.ClipsDescendants = false
@@ -3542,7 +3542,7 @@ run(function()
 						continue
 					end
 				end
-				local headPos, headVis = gameCamera:WorldToViewportPoint(ent.RootPart.Position + Vector3.new(0, ent.HipHeight + 1, 0))
+				local headPos, headVis = gameCamera:WorldToViewportPoint(ent.RootPart.Position + vector.create(0, ent.HipHeight + 1, 0))
 				EntityNameTag.Visible = headVis
 				if not headVis then
 					continue
@@ -3569,7 +3569,7 @@ run(function()
 						continue
 					end
 				end
-				local headPos, headVis = gameCamera:WorldToViewportPoint(ent.RootPart.Position + Vector3.new(0, ent.HipHeight + 1, 0))
+				local headPos, headVis = gameCamera:WorldToViewportPoint(ent.RootPart.Position + vector.create(0, ent.HipHeight + 1, 0))
 				EntityNameTag.Text.Visible = headVis
 				EntityNameTag.BG.Visible = headVis and Background.Enabled
 				if not headVis then
@@ -3814,7 +3814,7 @@ run(function()
 		local billboard = Instance.new('BillboardGui')
 		billboard.Parent = Folder
 		billboard.Name = 'chest'
-		billboard.StudsOffsetWorldSpace = Vector3.new(0, 3, 0)
+		billboard.StudsOffsetWorldSpace = vector.create(0, 3, 0)
 		billboard.Size = UDim2.fromOffset(36, 36)
 		billboard.AlwaysOnTop = true
 		billboard.ClipsDescendants = false
@@ -3998,7 +3998,7 @@ run(function()
 		dragon_slayer = function()
 			kitCollection('KaliyahPunchInteraction', function(v)
 				bedwars.DragonSlayerController:deleteEmblem(v)
-				bedwars.DragonSlayerController:playPunchAnimation(Vector3.zero)
+				bedwars.DragonSlayerController:playPunchAnimation(vector.zero)
 				bedwars.Client:Get(remotes.KaliyahPunch):SendToServer({
 					target = v
 				})
@@ -4475,7 +4475,7 @@ run(function()
 						end
 	
 						local bodyforce = Instance.new('BodyForce')
-						bodyforce.Force = Vector3.new(0, projectilemodel.PrimaryPart.AssemblyMass * workspace.Gravity, 0)
+						bodyforce.Force = vector.create(0, projectilemodel.PrimaryPart.AssemblyMass * workspace.Gravity, 0)
 						bodyforce.Name = 'AntiGravity'
 						bodyforce.Parent = projectilemodel.PrimaryPart
 	
@@ -4510,7 +4510,7 @@ run(function()
 						for _, v in items do
 							if tick() - (v:GetAttribute('ClientDropTime') or 0) < 2 then continue end
 							if isnetworkowner(v) and Network.Enabled and entitylib.character.Humanoid.Health > 0 then 
-								v.CFrame = CFrame.new(localPosition - Vector3.new(0, 3, 0)) 
+								v.CFrame = CFrame.new(localPosition - vector.create(0, 3, 0)) 
 							end
 							
 							if (localPosition - v.Position).Magnitude <= Range.Value then
@@ -4574,7 +4574,7 @@ run(function()
 					bedwars.Client:Get(remotes.SpawnRaven):CallServerAsync():andThen(function(projectile)
 						if projectile then
 							local bodyforce = Instance.new('BodyForce')
-							bodyforce.Force = Vector3.new(0, projectile.PrimaryPart.AssemblyMass * workspace.Gravity, 0)
+							bodyforce.Force = vector.create(0, projectile.PrimaryPart.AssemblyMass * workspace.Gravity, 0)
 							bodyforce.Parent = projectile.PrimaryPart
 	
 							if plr then
@@ -4606,13 +4606,13 @@ run(function()
 	local Diagonal
 	local LimitItem
 	local Mouse
-	local adjacent, lastpos = {}, Vector3.zero
+	local adjacent, lastpos = {}, vector.zero
 	
 	for x = -3, 3, 3 do
 		for y = -3, 3, 3 do
 			for z = -3, 3, 3 do
-				local vec = Vector3.new(x, y, z)
-				if vec ~= Vector3.zero then
+				local vec = vector.create(x, y, z)
+				if vec ~= vector.zero then
 					table.insert(adjacent, vec)
 				end
 			end
@@ -4620,15 +4620,15 @@ run(function()
 	end
 	
 	local function nearCorner(poscheck, pos)
-		local startpos = poscheck - Vector3.new(3, 3, 3)
-		local endpos = poscheck + Vector3.new(3, 3, 3)
+		local startpos = poscheck - vector.create(3, 3, 3)
+		local endpos = poscheck + vector.create(3, 3, 3)
 		local check = poscheck + (pos - poscheck).Unit * 100
-		return Vector3.new(math.clamp(check.X, startpos.X, endpos.X), math.clamp(check.Y, startpos.Y, endpos.Y), math.clamp(check.Z, startpos.Z, endpos.Z))
+		return vector.create(math.clamp(check.X, startpos.X, endpos.X), math.clamp(check.Y, startpos.Y, endpos.Y), math.clamp(check.Z, startpos.Z, endpos.Z))
 	end
 	
 	local function blockProximity(pos)
 		local mag, returned = 60
-		local tab = getBlocksInPoints(bedwars.BlockController:getBlockPosition(pos - Vector3.new(21, 21, 21)), bedwars.BlockController:getBlockPosition(pos + Vector3.new(21, 21, 21)))
+		local tab = getBlocksInPoints(bedwars.BlockController:getBlockPosition(pos - vector.create(21, 21, 21)), bedwars.BlockController:getBlockPosition(pos + vector.create(21, 21, 21)))
 		for _, v in tab do
 			local blockpos = nearCorner(v, pos)
 			local newmag = (pos - blockpos).Magnitude
@@ -4674,15 +4674,15 @@ run(function()
 						if wool then
 							local root = entitylib.character.RootPart
 							if Tower.Enabled and inputService:IsKeyDown(Enum.KeyCode.Space) and (not inputService:GetFocusedTextBox()) then
-								root.Velocity = Vector3.new(root.Velocity.X, 38, root.Velocity.Z)
+								root.Velocity = vector.create(root.Velocity.X, 38, root.Velocity.Z)
 							end
 	
 							for i = Expand.Value, 1, -1 do
-								local currentpos = roundPos(root.Position - Vector3.new(0, entitylib.character.HipHeight + (Downwards.Enabled and inputService:IsKeyDown(Enum.KeyCode.LeftShift) and 4.5 or 1.5), 0) + entitylib.character.Humanoid.MoveDirection * (i * 3))
+								local currentpos = roundPos(root.Position - vector.create(0, entitylib.character.HipHeight + (Downwards.Enabled and inputService:IsKeyDown(Enum.KeyCode.LeftShift) and 4.5 or 1.5), 0) + entitylib.character.Humanoid.MoveDirection * (i * 3))
 								if Diagonal.Enabled then
 									if math.abs(math.round(math.deg(math.atan2(-entitylib.character.Humanoid.MoveDirection.X, -entitylib.character.Humanoid.MoveDirection.Z)) / 45) * 45) % 90 == 45 then
 										local dt = (lastpos - currentpos)
-										if ((dt.X == 0 and dt.Z ~= 0) or (dt.X ~= 0 and dt.Z == 0)) and ((lastpos - root.Position) * Vector3.new(1, 0, 1)).Magnitude < 2.5 then
+										if ((dt.X == 0 and dt.Z ~= 0) or (dt.X ~= 0 and dt.Z == 0)) and ((lastpos - root.Position) * vector.create(1, 0, 1)).Magnitude < 2.5 then
 											currentpos = lastpos
 										end
 									end
@@ -5004,7 +5004,7 @@ run(function()
 	local BedProtector
 	
 	local function getBedNear()
-		local localPosition = entitylib.isAlive and entitylib.character.RootPart.Position or Vector3.zero
+		local localPosition = entitylib.isAlive and entitylib.character.RootPart.Position or vector.zero
 		for _, v in collectionService:GetTagged('bed') do
 			if (localPosition - v.Position).Magnitude < 20 and v:GetAttribute('Team'..(lplr:GetAttribute('Team') or -1)..'NoBreak') then
 				return v
@@ -5030,10 +5030,10 @@ run(function()
 		local positions = {}
 		for h = size, 0, -1 do
 			for w = h, 0, -1 do
-				table.insert(positions, Vector3.new(w, (size - h), ((h + 1) - w)) * grid)
-				table.insert(positions, Vector3.new(w * -1, (size - h), ((h + 1) - w)) * grid)
-				table.insert(positions, Vector3.new(w, (size - h), (h - w) * -1) * grid)
-				table.insert(positions, Vector3.new(w * -1, (size - h), (h - w) * -1) * grid)
+				table.insert(positions, vector.create(w, (size - h), ((h + 1) - w)) * grid)
+				table.insert(positions, vector.create(w * -1, (size - h), ((h + 1) - w)) * grid)
+				table.insert(positions, vector.create(w, (size - h), (h - w) * -1) * grid)
+				table.insert(positions, vector.create(w * -1, (size - h), (h - w) * -1) * grid)
 			end
 		end
 		return positions
@@ -5156,8 +5156,8 @@ run(function()
 	for x = -3, 3, 3 do
 		for y = -3, 3, 3 do
 			for z = -3, 3, 3 do
-				if Vector3.new(x, y, z) ~= Vector3.zero then
-					table.insert(poschecklist, Vector3.new(x, y, z))
+				if vector.create(x, y, z) ~= vector.zero then
+					table.insert(poschecklist, vector.create(x, y, z))
 				end
 			end
 		end
@@ -5175,7 +5175,7 @@ run(function()
 		for x = (e.X > s.X and s.X or e.X), (e.X > s.X and e.X or s.X) do
 			for y = (e.Y > s.Y and s.Y or e.Y), (e.Y > s.Y and e.Y or s.Y) do
 				for z = (e.Z > s.Z and s.Z or e.Z), (e.Z > s.Z and e.Z or s.Z) do
-					local vec = Vector3.new(x, y, z)
+					local vec = vector.create(x, y, z)
 					local block = blocks:getBlockAt(vec)
 					if block and block:GetAttribute('PlacedByUserId') == lplr.UserId then
 						list[vec] = block
@@ -6574,7 +6574,7 @@ run(function()
 		local start = v.Adornee.Position
 		local alreadygot = {}
 		scanSide(v.Adornee, start, alreadygot)
-		scanSide(v.Adornee, start + Vector3.new(0, 0, 3), alreadygot)
+		scanSide(v.Adornee, start + vector.create(0, 0, 3), alreadygot)
 		table.sort(alreadygot, function(a, b)
 			return (bedwars.ItemMeta[a].block and bedwars.ItemMeta[a].block.health or 0) > (bedwars.ItemMeta[b].block and bedwars.ItemMeta[b].block.health or 0)
 		end)
@@ -6593,7 +6593,7 @@ run(function()
 		local billboard = Instance.new('BillboardGui')
 		billboard.Parent = Folder
 		billboard.Name = 'bed'
-		billboard.StudsOffsetWorldSpace = Vector3.new(0, 3, 0)
+		billboard.StudsOffsetWorldSpace = vector.create(0, 3, 0)
 		billboard.Size = UDim2.fromOffset(36, 36)
 		billboard.AlwaysOnTop = true
 		billboard.ClipsDescendants = false
@@ -6706,7 +6706,7 @@ run(function()
 			local percent = math.clamp(health / maxHealth, 0, 1)
 			local cleanCheck = true
 			local part = Instance.new('Part')
-			part.Size = Vector3.one
+			part.Size = vector.one
 			part.CFrame = CFrame.new(bedwars.BlockController:getWorldPosition(blockRef.blockPosition))
 			part.Transparency = 1
 			part.Anchored = true
@@ -6717,7 +6717,7 @@ run(function()
 	
 			local mounted = bedwars.Roact.mount(create('BillboardGui', {
 				Size = UDim2.fromOffset(249, 102),
-				StudsOffset = Vector3.new(0, 2.5, 0),
+				StudsOffset = vector.create(0, 2.5, 0),
 				Adornee = part,
 				MaxDistance = 40,
 				AlwaysOnTop = true
@@ -6812,7 +6812,7 @@ run(function()
 				if path then
 					local currentnode = target
 					for _, part in parts do
-						part.Position = currentnode or Vector3.zero
+						part.Position = currentnode or vector.zero
 						if currentnode then
 							part.BoxHandleAdornment.Color3 = currentnode == endpos and Color3.new(1, 0.2, 0.2) or currentnode == target and Color3.new(0.2, 0.2, 1) or Color3.new(0.2, 1, 0.2)
 						end
@@ -6841,7 +6841,7 @@ run(function()
 					part.Transparency = 1
 					part.Parent = gameCamera
 					local highlight = Instance.new('BoxHandleAdornment')
-					highlight.Size = Vector3.one
+					highlight.Size = vector.one
 					highlight.AlwaysOnTop = true
 					highlight.ZIndex = 1
 					highlight.Transparency = 0.5
@@ -6871,7 +6871,7 @@ run(function()
 						if attemptBreak(IronOre.Enabled and ironores, localPosition) then continue end
 	
 						for _, v in parts do
-							v.Position = Vector3.zero
+							v.Position = vector.zero
 						end
 					end
 				until not Breaker.Enabled
@@ -7383,10 +7383,10 @@ run(function()
 				for _, v in clone:GetDescendants() do
 					if v:IsA('BasePart') then
 						local bodyforce = Instance.new('BodyForce')
-						bodyforce.Force = Vector3.new(0, (workspace.Gravity - 10) * v:GetMass(), 0)
+						bodyforce.Force = vector.create(0, (workspace.Gravity - 10) * v:GetMass(), 0)
 						bodyforce.Parent = v
 						v.CanCollide = true
-						v.Velocity = partvelo[v.Name] or Vector3.zero
+						v.Velocity = partvelo[v.Name] or vector.zero
 					end
 				end
 			end)
@@ -7398,16 +7398,16 @@ run(function()
 				highlight:Destroy() 
 			end
 			local startpos = 1125
-			local startcf = char.PrimaryPart.CFrame.p - Vector3.new(0, 8, 0)
-			local newpos = Vector3.new((math.random(1, 10) - 5) * 2, startpos, (math.random(1, 10) - 5) * 2)
+			local startcf = char.PrimaryPart.CFrame.p - vector.create(0, 8, 0)
+			local newpos = vector.create((math.random(1, 10) - 5) * 2, startpos, (math.random(1, 10) - 5) * 2)
 	
 			for i = startpos - 75, 0, -75 do
-				local newpos2 = Vector3.new((math.random(1, 10) - 5) * 2, i, (math.random(1, 10) - 5) * 2)
+				local newpos2 = vector.create((math.random(1, 10) - 5) * 2, i, (math.random(1, 10) - 5) * 2)
 				if i == 0 then
-					newpos2 = Vector3.zero
+					newpos2 = vector.zero
 				end
 				local part = Instance.new('Part')
-				part.Size = Vector3.new(1.5, 1.5, 77)
+				part.Size = vector.create(1.5, 1.5, 77)
 				part.Material = Enum.Material.SmoothPlastic
 				part.Anchored = true
 				part.Material = Enum.Material.Neon
@@ -7415,7 +7415,7 @@ run(function()
 				part.CFrame = CFrame.new(startcf + newpos + ((newpos2 - newpos) * 0.5), startcf + newpos2)
 				part.Parent = workspace
 				local part2 = part:Clone()
-				part2.Size = Vector3.new(3, 3, 78)
+				part2.Size = vector.create(3, 3, 78)
 				part2.Color = Color3.new(0.7, 0.7, 0.7)
 				part2.Transparency = 0.7
 				part2.Material = Enum.Material.SmoothPlastic
@@ -7428,7 +7428,7 @@ run(function()
 					local soundpart = Instance.new('Part')
 					soundpart.Transparency = 1
 					soundpart.Anchored = true
-					soundpart.Size = Vector3.zero
+					soundpart.Size = vector.zero
 					soundpart.Position = startcf
 					soundpart.Parent = workspace
 					bedwars.QueryUtil:setQueryIgnored(soundpart, true)
