@@ -1,3 +1,4 @@
+--!native
 --[[
 	Fiu: https://github.com/rce-incorporated/Fiu
 
